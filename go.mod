@@ -6,6 +6,8 @@ require (
 	gioui.org v0.8.0
 	gioui.org/x v0.8.1
 	github.com/PuerkitoBio/goquery v1.10.3
+	github.com/buger/jsonparser v1.1.1
+	github.com/joho/godotenv v1.5.1
 )
 
 require (

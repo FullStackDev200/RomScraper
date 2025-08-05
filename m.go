@@ -2,14 +2,10 @@
 
 package main
 
-// A simple Gio program. See https://gioui.org for more information.
-
 import (
 	"fmt"
-	// "go/format" https://github.com/FullStackDev200/RomScraper/http/scraping"
 	"image"
 
-	"github.com/FullStackDev200/RomScraper/http/scraping"
 	"image/jpeg"
 	"image/png"
 	"log"
@@ -17,9 +13,8 @@ import (
 
 	"gioui.org/app"
 	"gioui.org/io/event"
-	// "github.com/FullStackDev200/Scraper"
+	sc "github.com/FullStackDev200/RomScraper/scraping"
 
-	// "gioui.org/io/system"
 	"gioui.org/layout"
 	"gioui.org/op"
 	"gioui.org/op/paint"
@@ -57,12 +52,30 @@ type ImageResult struct {
 }
 
 func loop(w *app.Window) error {
+	var games []sc.Game
+
 	expl := explorer.NewExplorer(w)
 	var openBtn, saveBtn widget.Clickable
 	th := material.NewTheme()
 	th.Shaper = text.NewShaper(text.WithCollection(gofont.Collection()))
 	imgChan := make(chan ImageResult)
 	saveChan := make(chan error)
+
+	type GameUpdate struct {
+		Game sc.Game
+		Err  error
+	}
+	gameChan := make(chan GameUpdate)
+
+	go func() {
+		gameNames, gameIds := sc.TGDBGetGamesByName("mario")
+		for id, gameName := range gameNames {
+			Cover := sc.TGDBGetImageCover(gameIds[id])
+			gameChan <- GameUpdate{
+				Game: sc.Game{Title: gameName, Id: gameIds[id], CoverImg: Cover},
+			}
+		}
+	}()
 
 	events := make(chan event.Event)
 	acks := make(chan struct{})
@@ -81,20 +94,14 @@ func loop(w *app.Window) error {
 	var saveErr error
 	var ops op.Ops
 
-	files, err := os.ReadDir("testpngs/")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	for _, file := range files {
-		fmt.Println(file.Name(), file.IsDir())
-	}
-
 	for {
 		select {
 		case img = <-imgChan:
 			w.Invalidate()
 		case saveErr = <-saveChan:
+			w.Invalidate()
+		case update := <-gameChan:
+			games = append(games, update.Game)
 			w.Invalidate()
 		case e := <-events:
 			expl.ListenEvents(e)
@@ -182,12 +189,23 @@ func loop(w *app.Window) error {
 						}
 						return material.H6(th, saveErr.Error()).Layout(gtx)
 					}),
+
 					layout.Rigid(func(gtx C) D {
 						children := []layout.FlexChild{}
-						for _, file := range files {
-							children = append(children,
-								layout.Rigid(material.H6(th, file.Name()).Layout),
-							)
+						for _, game := range games {
+							if game.CoverImg != nil {
+								children = append(children,
+									layout.Rigid(material.H6(th, game.Title).Layout),
+									layout.Rigid(widget.Image{
+										Src: paint.NewImageOp(game.CoverImg),
+										Fit: widget.Contain,
+									}.Layout),
+								)
+							} else {
+								children = append(children,
+									layout.Rigid(material.H6(th, game.Title+" (no image)").Layout),
+								)
+							}
 						}
 						return layout.Flex{Axis: layout.Vertical}.Layout(gtx, children...)
 					}),
