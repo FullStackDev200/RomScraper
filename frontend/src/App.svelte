@@ -7,15 +7,13 @@
 
   import { GetGamesByName, GetGameCoverUrl } from "../wailsjs/go/main/App.js";
 
+  import { scraping } from "../wailsjs/go/models";
+
   let selectedGame = null;
   let showDialog = false;
   let showSettings = false;
 
-  /**
-   * Handle a game object from TheGamesDB scraping
-   * @param {Object} game - A game object containing data from scraping\thegamesdb.go
-   */
-  function openDialog(game) {
+  function openDialog(game: scraping.Game) {
     selectedGame = game;
     showDialog = true;
   }
@@ -34,6 +32,7 @@
     error = "";
     loading = true;
 
+    // TODO: Rewrite more concisely
     try {
       const fetchedGames = await GetGamesByName(query);
 

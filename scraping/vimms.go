@@ -15,15 +15,17 @@ import (
 	"github.com/buger/jsonparser"
 )
 
+type GameHash struct {
+	SHA1 string
+	MD5  string
+	CRC  string
+}
+
 type Rom struct {
-	Title    string
-	Id       int64
-	Platform string
-	GameHash struct {
-		SHA1 string
-		MD5  string
-		CRC  string
-	}
+	Title       string
+	Id          int64
+	Platform    string
+	GameHash    GameHash
 	CoverUrl    string
 	DownloadUrl string
 	PageUrl     string

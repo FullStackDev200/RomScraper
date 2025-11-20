@@ -20,12 +20,27 @@ export namespace scraping {
 	        this.CoverUrl = source["CoverUrl"];
 	    }
 	}
+	export class GameHash {
+	    SHA1: string;
+	    MD5: string;
+	    CRC: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new GameHash(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.SHA1 = source["SHA1"];
+	        this.MD5 = source["MD5"];
+	        this.CRC = source["CRC"];
+	    }
+	}
 	export class Rom {
 	    Title: string;
 	    Id: number;
 	    Platform: string;
-	    // Go type: struct { SHA1 string; MD5 string; CRC string }
-	    GameHash: any;
+	    GameHash: GameHash;
 	    CoverUrl: string;
 	    DownloadUrl: string;
 	    PageUrl: string;
@@ -39,7 +54,7 @@ export namespace scraping {
 	        this.Title = source["Title"];
 	        this.Id = source["Id"];
 	        this.Platform = source["Platform"];
-	        this.GameHash = this.convertValues(source["GameHash"], Object);
+	        this.GameHash = this.convertValues(source["GameHash"], GameHash);
 	        this.CoverUrl = source["CoverUrl"];
 	        this.DownloadUrl = source["DownloadUrl"];
 	        this.PageUrl = source["PageUrl"];

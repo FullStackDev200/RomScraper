@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import Spinner from "./Spinner.svelte";
 
   import { createEventDispatcher, onMount } from "svelte";
@@ -10,10 +10,12 @@
     RAvalidateHash,
   } from "../wailsjs/go/main/App.js";
 
-  export let selectedGame;
-  export let showDialog;
-  let dialog;
-  let selectedGameRomList;
+  import { scraping } from "../wailsjs/go/models";
+
+  export let selectedGame: scraping.Rom;
+  export let showDialog: Boolean;
+  let dialog: HTMLDialogElement;
+  let selectedGameRomList: scraping.Rom[];
   let isLoading = true;
 
   onMount(async () => {
@@ -62,17 +64,14 @@
     await new Promise((r) => setTimeout(r, 2000));
   }
 
-  /**
-   * @param {string} romName
-   */
-  async function getRoms(romName) {
+  async function getRoms(romName: string) {
     const roms = await VimSearchGames(romName, "GBA");
     // selectedRomList = roms;
     return roms;
   }
+
   let RomCount = 0;
-  // Display the rom title if available
-  // $: displayName = selectedRom?.Title ?? "No match found";
+
   $: displayName = selectedGameRomList?.[RomCount]?.Title ?? "No match found";
   $: displayPlatform =
     selectedGameRomList?.[RomCount]?.Platform ?? "No match found";
