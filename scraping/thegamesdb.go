@@ -2,8 +2,8 @@ package scraping
 
 import (
 	"bytes"
-	"fmt"
-	// "fmt"
+	"os"
+
 	"strconv"
 
 	_ "image/gif"
@@ -18,105 +18,90 @@ import (
 	"log"
 	"net/http"
 	"net/url"
-	"os"
 )
 
-func TGDBGetGamesByName(searchName string) (gameNameList []string, ids []int64) {
+type Game struct {
+	Title    string
+	Id       int64
+	Link     string
+	CoverImg image.Image
+	CoverUrl string
+}
+
+// TODO: Make it accept next page
+// TODO: Add platform list fro Downloads\response_1755844081358.json
+func TGDBGetGamesByName(searchName string) (games []Game) {
 	client := &http.Client{}
-	err := godotenv.Load()
+
+	err := godotenv.Load(".env")
 	if err != nil {
 		log.Fatalf("err loading: %v", err)
 	}
+
 	apikey := os.Getenv("TGD_API_KEY")
+
 	if apikey == "" {
-		log.Fatal("no api found")
+		log.Println("no api found")
 	}
+
 	req, err := http.NewRequest("GET", "https://api.thegamesdb.net/v1/Games/ByGameName?apikey="+apikey+"&name="+url.QueryEscape(searchName), nil)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	req.Header.Set("accept", "application/json")
 	resp, err := client.Do(req)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	defer resp.Body.Close()
 	bodyText, err := io.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
-	code, err := jsonparser.GetInt(bodyText, "code")
-	if code != 200 {
-		log.Println("Fail to load games: ", code)
+	urlCode, err := jsonparser.GetInt(bodyText, "code")
+	if urlCode != 200 {
+		log.Println("Fail to load games: ", urlCode)
 	}
 
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
-	// gameNameList, err = jsonparser.GetString(bodyText, "data", "games", "[0]", "game_title")
 	jsonparser.ArrayEach(bodyText, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
 		gameName, err := jsonparser.GetString(value, "game_title")
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err)
 		}
-		gameNameList = append(gameNameList, gameName)
-		id, err := jsonparser.GetInt(value, "id")
+		var newGame Game
+		newGame.Title = gameName
+		// gameNameList = append(gameNameList, gameName)
+		gameId, err := jsonparser.GetInt(value, "id")
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err)
 		}
-		ids = append(ids, id)
+		// ids = append(ids, id)
+		newGame.Id = gameId
+		games = append(games, newGame)
 	}, "data", "games")
 
 	if err != nil {
-		log.Fatalf("game_title not found: %v", err)
+		log.Printf("game_title not found: %v", err)
 	}
 
 	// id, err = jsonparser.GetInt(bodyText, "data", "games", "[0]", "id")
 	if err != nil {
-		log.Fatalf("id not found: %v", err)
+		log.Printf("id not found: %v", err)
 	}
 
 	return
 }
 
-func TGDBGetImageCover(id int64) (cover image.Image) {
-
+func TGDBGetGameCover(url string) (cover image.Image) {
 	client := &http.Client{}
-	err := godotenv.Load()
-
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		log.Fatalf("err loading: %v", err)
-	}
-
-	req, err := http.NewRequest("GET", "https://api.thegamesdb.net/v1/Games/Images?apikey="+os.Getenv("TGD_API_KEY")+"&games_id="+strconv.FormatInt(id, 10), nil)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	req.Header.Set("accept", "application/json")
-	resp, err := client.Do(req)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	defer resp.Body.Close()
-
-	bodyText, err := io.ReadAll(resp.Body)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	filename, err := jsonparser.GetString(bodyText, "data", "images", strconv.FormatInt(id, 10), "[0]", "filename")
-	if err != nil {
-		log.Fatal("Error parsing Json:", err)
-	}
-
-	urlStart := "https://cdn.thegamesdb.net/images/original/"
-	req, err = http.NewRequest("GET", urlStart+filename, nil)
-	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:141.0) Gecko/20100101 Firefox/141.0")
 	req.Header.Set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
@@ -132,29 +117,67 @@ func TGDBGetImageCover(id int64) (cover image.Image) {
 	// req.Header.Set("If-None-Match", `"62ebc267-d2aa"`)
 	req.Header.Set("Priority", "u=0, i")
 
-	resp, err = client.Do(req)
+	resp, err := client.Do(req)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
 	// if resp.StatusCode != http.StatusOK {
-	// 	log.Fatalf("Bad status: %d", resp.StatusCode)
+	// 	log.Printlnf("Bad status: %d", resp.StatusCode)
 	// }
 
 	defer resp.Body.Close()
 
-	bodyText, err = io.ReadAll(resp.Body)
+	bodyText, err := io.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
-	cover, format, err := image.Decode(bytes.NewReader(bodyText))
+	cover, _, err = image.Decode(bytes.NewReader(bodyText))
 
 	if err != nil {
-		log.Fatal("Error Decoding image: ", err)
+		log.Println("Error Decoding image: ", err)
 	}
 
-	fmt.Printf("format: %v\n", format)
+	return
+}
 
+func TGDBGetGameCoverUrl(id int64) (url string) {
+
+	client := &http.Client{}
+	err := godotenv.Load()
+
+	if err != nil {
+		log.Printf("err loading: %v", err)
+	}
+
+	apikey := os.Getenv("TGD_API_KEY")
+
+	url = "https://api.thegamesdb.net/v1/Games/Images?apikey=" + apikey + "&games_id=" + strconv.FormatInt(id, 10)
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		log.Println(err)
+	}
+
+	req.Header.Set("accept", "application/json")
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Println(err)
+	}
+
+	defer resp.Body.Close()
+
+	bodyText, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Println(err)
+	}
+
+	filename, err := jsonparser.GetString(bodyText, "data", "images", strconv.FormatInt(id, 10), "[0]", "filename")
+	if err != nil {
+		log.Println("Error parsing Json:", err)
+	}
+
+	urlStart := "https://cdn.thegamesdb.net/images/original/"
+	url = urlStart + filename
 	return
 }
