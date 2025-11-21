@@ -109,7 +109,7 @@
       <p id="rom-info"><strong>Rom Info</strong></p>
 
       {#if !isLoading && selectedGameRomList}
-        <p>Name: {displayName}</p>
+        <p style="max-width: 10em">Name: {displayName}</p>
         <p>Platform: {displayPlatform}</p>
         <div id="choose-buttons">
           <button on:click={handlePrev}>&lt;&lt; Previous</button>
