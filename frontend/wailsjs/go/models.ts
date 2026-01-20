@@ -4,7 +4,6 @@ export namespace scraping {
 	    Title: string;
 	    Id: number;
 	    Link: string;
-	    CoverImg: any;
 	    CoverUrl: string;
 	
 	    static createFrom(source: any = {}) {
@@ -16,7 +15,6 @@ export namespace scraping {
 	        this.Title = source["Title"];
 	        this.Id = source["Id"];
 	        this.Link = source["Link"];
-	        this.CoverImg = source["CoverImg"];
 	        this.CoverUrl = source["CoverUrl"];
 	    }
 	}
@@ -42,6 +40,7 @@ export namespace scraping {
 	    Platform: string;
 	    GameHash: GameHash;
 	    CoverUrl: string;
+	    CoverImg: any;
 	    DownloadUrl: string;
 	    PageUrl: string;
 	
@@ -56,6 +55,7 @@ export namespace scraping {
 	        this.Platform = source["Platform"];
 	        this.GameHash = this.convertValues(source["GameHash"], GameHash);
 	        this.CoverUrl = source["CoverUrl"];
+	        this.CoverImg = source["CoverImg"];
 	        this.DownloadUrl = source["DownloadUrl"];
 	        this.PageUrl = source["PageUrl"];
 	    }

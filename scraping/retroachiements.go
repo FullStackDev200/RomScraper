@@ -16,53 +16,6 @@ import (
 	"github.com/joho/godotenv"
 )
 
-// Retroachievements Supported Systems
-//
-//
-// | System / Platform                       | Hash Type          |
-// | --------------------------------------- | ------------------ |
-// | Atari 2600                              | MD5                |
-// | Atari 7800                              | MD5 (header-aware) |
-// | Atari Jaguar                            | MD5                |
-// | Atari Jaguar CD                         | Custom             |
-// | Atari Lynx                              | MD5 (header-aware) |
-// | Bandai WonderSwan / Color               | MD5                |
-// | Channel F                               | MD5                |
-// | ColecoVision                            | MD5                |
-// | Dreamcast                               | Custom             |
-// | Famicom Disk System                     | MD5 (header-aware) |
-// | Game Boy / Color / Advance              | MD5                |
-// | Game Gear                               | MD5                |
-// | GameCube                                | Custom             |
-// | Intellivision                           | MD5                |
-// | MSX / MSX2                              | MD5                |
-// | Master System                           | MD5                |
-// | Mega Drive / Genesis                    | MD5                |
-// | NEC PC-8001 / 8801                      | MD5                |
-// | NES / Famicom                           | Custom             |
-// | Neo Geo CD                              | Custom             |
-// | Neo Geo Pocket / Color                  | MD5                |
-// | Nintendo 64                             | MD5                |
-// | Nintendo DS                             | Custom             |
-// | Odyssey²                                | MD5                |
-// | PC Engine / TurboGrafx / SuperGrafx     | MD5 (header-aware) |
-// | PC Engine CD / TurboGrafx-CD            | Custom             |
-// | PC-FX                                   | Custom             |
-// | PSP                                     | Custom             |
-// | PlayStation                             | Custom             |
-// | PlayStation 2                           | Custom             |
-// | Pokémon Mini                            | MD5                |
-// | SG-1000                                 | MD5                |
-// | SNES / SFC / Satellaview / Sufami Turbo | MD5 (header-aware) |
-// | Saturn                                  | Custom             |
-// | Sega 32X                                | MD5                |
-// | Sega CD                                 | Custom             |
-// | Vectrex                                 | MD5                |
-// | Virtual Boy                             | MD5                |
-// | WASM-4                                  | MD5                |
-// | Watara Supervision                      | MD5                |
-// | Wellback Mega Duck                      | MD5                |
-
 var RAconsoles = map[string]int{
 	"Atari 2600":     25, //MD5
 	"Atari 5200":     50, //?
@@ -94,11 +47,6 @@ var RAconsoles = map[string]int{
 	"Virtual Boy":    28, //MD5j
 	"Wii":            19, //No achiements
 	"Xbox":           22, //No achiements
-	// "PlayStation 3" :
-	// "Sega 32X" :
-	// "WiiWare" :
-	// "Xbox 360" :
-	// Xbox 360 (Digital)
 }
 
 func normalize(s string) string {

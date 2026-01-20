@@ -1,5 +1,6 @@
 <script lang="ts">
   import Spinner from "./Spinner.svelte";
+  import Switch from "./Switch.svelte";
 
   import { createEventDispatcher, onMount } from "svelte";
 
@@ -17,6 +18,7 @@
   let dialog: HTMLDialogElement;
   let selectedGameRomList: scraping.Rom[];
   let isLoading = true;
+  let switchValue = "Original";
 
   onMount(async () => {
     const cacheKey = `roms-${selectedGame.Title}`;
@@ -28,6 +30,8 @@
       selectedGameRomList = await getRoms(selectedGame.Title);
       localStorage.setItem(cacheKey, JSON.stringify(selectedGameRomList));
     }
+
+    console.log(selectedGameRomList?.[RomCount]);
 
     isLoading = false;
 
@@ -84,7 +88,7 @@
   }
 
   function handleNext() {
-    if (RomCount + 1 <= selectedGameRomList?.length) {
+    if (RomCount < selectedGameRomList?.length - 1) {
       RomCount++;
     }
   }
@@ -100,8 +104,23 @@
   <div class="game-info">
     <h2>{selectedGame.Title}</h2>
     <p><strong>Download Cover:</strong></p>
-    <img src={selectedGame.CoverUrl} alt={selectedGame.Title} width="200" />
+    {#if switchValue == "Original"}
+      <img src={selectedGame.CoverUrl} alt={selectedGame.Title} width="200" />
+    {:else}
+      <img
+        src={selectedGameRomList?.[RomCount]?.CoverUrl}
+        alt={selectedGame.Title}
+        width="200"
+      />
+    {/if}
     <p><strong>Download Title:</strong> {selectedGame.Title}</p>
+    <Switch
+      bind:value={switchValue}
+      label="Choose Cover"
+      design="multi"
+      options={["Original", "Selected"]}
+      fontSize={12}
+    />
   </div>
   <div class="separator"></div>
   <div class="rom-info">

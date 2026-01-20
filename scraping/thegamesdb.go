@@ -24,7 +24,6 @@ type Game struct {
 	Title    string
 	Id       int64
 	Link     string
-	CoverImg image.Image
 	CoverUrl string
 }
 

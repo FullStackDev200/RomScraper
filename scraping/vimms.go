@@ -2,6 +2,7 @@ package scraping
 
 import (
 	"crypto/tls"
+	"image"
 	"io"
 	"log"
 	"net/http"
@@ -9,9 +10,11 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"sort"
 	"sync"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/agnivade/levenshtein"
 	"github.com/buger/jsonparser"
 )
 
@@ -27,6 +30,7 @@ type Rom struct {
 	Platform    string
 	GameHash    GameHash
 	CoverUrl    string
+	CoverImg    image.Image
 	DownloadUrl string
 	PageUrl     string
 }
@@ -96,12 +100,7 @@ func VimmSearchRoms(gameName string, filter string) (roms []Rom) {
 				rom.DownloadUrl = "https://dl3.vimm.net/?mediaId=" + mediaId
 			})
 
-			doc.Find("img[title=\"Click to enlarge\"]").Each(func(i int, s *goquery.Selection) {
-				if i > 0 {
-					return
-				}
-				rom.CoverUrl, _ = s.First().Attr("src")
-			})
+			// TODO: Make coverurl from https://thumbnails.libretro.com
 
 			doc.Find("#data-md5").EachWithBreak(func(i int, s *goquery.Selection) bool {
 				if i > 0 {
@@ -149,16 +148,17 @@ func VimmSearchRoms(gameName string, filter string) (roms []Rom) {
 	}, "games")
 
 	wg.Wait()
+
+	sort.Slice(roms, func(i, j int) bool {
+		distI := levenshtein.ComputeDistance(roms[i].Title, gameName)
+		distJ := levenshtein.ComputeDistance(roms[j].Title, gameName)
+		return distI < distJ
+	})
+
 	return
 }
 
-func DownloadGame(rom Rom, path string) {
-	client := &http.Client{}
-	req, err := http.NewRequest("GET", rom.DownloadUrl, nil)
-	if err != nil {
-		log.Fatal(err)
-	}
-
+func reqSetHeaders(req *http.Request) {
 	req.Header.Set("User-Agent", "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:144.0) Gecko/20100101 Firefox/144.0")
 	req.Header.Set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
 	req.Header.Set("Accept-Language", "en-US,en;q=0.5")
@@ -172,6 +172,17 @@ func DownloadGame(rom Rom, path string) {
 	req.Header.Set("Sec-Fetch-Site", "same-site")
 	req.Header.Set("Sec-Fetch-User", "?1")
 	req.Header.Set("Priority", "u=0, i")
+}
+
+func DownloadGame(rom Rom, path string) {
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", rom.DownloadUrl, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	reqSetHeaders(req)
+
 	resp, err := client.Do(req)
 	if err != nil {
 		log.Fatal(err)

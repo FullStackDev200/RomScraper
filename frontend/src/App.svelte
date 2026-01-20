@@ -51,6 +51,8 @@
       loading = false;
     }
   }
+
+  // TODO: Add a store to download multiple files at the same time
 </script>
 
 <link href="./style.css" />
