@@ -35,7 +35,6 @@ var RAconsoles = map[string]int{
 	"Nintendo 3DS":   62, //No achiements
 	"Nintendo 64":    2,  //MD5
 	"Nintendo DS":    18, //Custom
-	"Nintendo":       62, //Custom
 	"PS Portable":    41, //Custom
 	"PlayStation 2":  21, //Custom
 	"PlayStation":    41, //Custom
@@ -95,7 +94,7 @@ func RAvalidateHash(rom Rom) (isValid bool) {
 	v := url.Values{}
 	v.Add("y", apikey)
 	log.Println(rom.Platform)
-	v.Add("i", strconv.Itoa(RAconsoles[rom.Platform]))
+	v.Add("i", strconv.Itoa(platfromForRA(rom.Platform)))
 	v.Add("h", "1")
 	v.Add("f", "1")
 

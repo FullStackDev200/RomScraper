@@ -85,3 +85,6 @@ func (a *App) GetConfig(cs *uc.ConfigStore) (uc.Config, error) {
 	return cfg, err
 }
 
+func (a *App) PlatformToString(platform sc.Platform) string {
+	return sc.PlatformToString(platform)
+}

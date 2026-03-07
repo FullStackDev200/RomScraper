@@ -1,5 +1,55 @@
 export namespace scraping {
 	
+	export enum Platform {
+	    NES = 0,
+	    _GB = 1,
+	    SNES = 2,
+	    _BSX = 3,
+	    _VB = 4,
+	    _N64 = 5,
+	    _GBC = 6,
+	    _GBA = 7,
+	    _GCN = 8,
+	    _NDS = 9,
+	    _Wii = 10,
+	    _DSi = 11,
+	    _3DS = 12,
+	    _WiiU = 13,
+	    _Switch = 14,
+	    _SMS = 15,
+	    _GEN = 16,
+	    _GG = 17,
+	    _SCD = 18,
+	    _32X = 19,
+	    _SAT = 20,
+	    _DC = 21,
+	    _PS1 = 22,
+	    _PS2 = 23,
+	    _PS3 = 24,
+	    _PS4 = 25,
+	    _PS5 = 26,
+	    _PSP = 27,
+	    _PSVita = 28,
+	    _XBOX = 29,
+	    _XB360 = 30,
+	    _XBLA = 31,
+	    _XBONE = 32,
+	    _3DO = 33,
+	    _ARCADE = 34,
+	    _A2600 = 35,
+	    _A5200 = 36,
+	    _A7800 = 37,
+	    _AJ = 38,
+	    _JCD = 39,
+	    _AL = 40,
+	    _MOB = 41,
+	    _NEO = 42,
+	    _PC = 43,
+	    _CD_i = 44,
+	    _TG_16 = 45,
+	    _TGCD = 46,
+	    _MUL = 47,
+	}
 	export class Game {
 	    Title: string;
 	    Id: number;
@@ -37,7 +87,7 @@ export namespace scraping {
 	export class Rom {
 	    Title: string;
 	    Id: number;
-	    Platform: string;
+	    Platform: Platform;
 	    GameHash: GameHash;
 	    CoverUrl: string;
 	    CoverImg: any;

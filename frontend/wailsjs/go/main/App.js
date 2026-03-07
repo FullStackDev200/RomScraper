@@ -26,6 +26,10 @@ export function NewConfigStore() {
   return window['go']['main']['App']['NewConfigStore']();
 }
 
+export function PlatformToString(arg1) {
+  return window['go']['main']['App']['PlatformToString'](arg1);
+}
+
 export function RAvalidateHash(arg1) {
   return window['go']['main']['App']['RAvalidateHash'](arg1);
 }

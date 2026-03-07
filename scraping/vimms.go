@@ -27,7 +27,7 @@ type GameHash struct {
 type Rom struct {
 	Title       string
 	Id          int64
-	Platform    string
+	Platform    Platform
 	GameHash    GameHash
 	CoverUrl    string
 	CoverImg    image.Image
@@ -74,7 +74,9 @@ func VimmSearchRoms(gameName string, filter string) (roms []Rom) {
 
 			var rom Rom
 			rom.Title, _ = jsonparser.GetString(value, "title")
-			rom.Platform, _ = jsonparser.GetString(value, "system")
+
+			platformString, _ := jsonparser.GetString(value, "system")
+			rom.Platform = stringToPlatform(platformString)
 			rom.PageUrl, _ = jsonparser.GetString(value, "url")
 
 			req, err := http.NewRequest("GET", rom.PageUrl, nil)

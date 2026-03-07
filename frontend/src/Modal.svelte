@@ -9,6 +9,7 @@
     ChooseDirectory,
     VimDownloadGame,
     RAvalidateHash,
+    PlatformToString,
   } from "../wailsjs/go/main/App.js";
 
   import { scraping } from "../wailsjs/go/models";
@@ -75,10 +76,14 @@
   }
 
   let RomCount = 0;
+  let displayPlatform = "Loading…";
 
   $: displayName = selectedGameRomList?.[RomCount]?.Title ?? "No match found";
-  $: displayPlatform =
-    selectedGameRomList?.[RomCount]?.Platform ?? "No match found";
+  $: (async () => {
+    displayPlatform =
+      (await PlatformToString(selectedGameRomList?.[RomCount]?.Platform)) ??
+      "No match found";
+  })();
 
   function goToDownlaodPage() {
     if (selectedGameRomList[RomCount].PageUrl) {

@@ -16,6 +16,8 @@ export function GetGamesByName(arg1:string):Promise<Array<scraping.Game>>;
 
 export function NewConfigStore():Promise<userconfig.ConfigStore>;
 
+export function PlatformToString(arg1:scraping.Platform):Promise<string>;
+
 export function RAvalidateHash(arg1:scraping.Rom):Promise<boolean>;
 
 export function VimDownloadGame(arg1:scraping.Rom,arg2:string):Promise<void>;
