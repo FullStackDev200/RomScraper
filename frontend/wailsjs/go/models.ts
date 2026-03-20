@@ -1,9 +1,9 @@
 export namespace scraping {
 	
 	export enum Platform {
-	    NES = 0,
+	    _NES = 0,
 	    _GB = 1,
-	    SNES = 2,
+	    _SNES = 2,
 	    _BSX = 3,
 	    _VB = 4,
 	    _N64 = 5,
@@ -50,24 +50,6 @@ export namespace scraping {
 	    _TGCD = 46,
 	    _MUL = 47,
 	}
-	export class Game {
-	    Title: string;
-	    Id: number;
-	    Link: string;
-	    CoverUrl: string;
-	
-	    static createFrom(source: any = {}) {
-	        return new Game(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.Title = source["Title"];
-	        this.Id = source["Id"];
-	        this.Link = source["Link"];
-	        this.CoverUrl = source["CoverUrl"];
-	    }
-	}
 	export class GameHash {
 	    SHA1: string;
 	    MD5: string;
@@ -93,6 +75,7 @@ export namespace scraping {
 	    CoverImg: any;
 	    DownloadUrl: string;
 	    PageUrl: string;
+	    RomName: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new Rom(source);
@@ -108,6 +91,7 @@ export namespace scraping {
 	        this.CoverImg = source["CoverImg"];
 	        this.DownloadUrl = source["DownloadUrl"];
 	        this.PageUrl = source["PageUrl"];
+	        this.RomName = source["RomName"];
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {

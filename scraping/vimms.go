@@ -2,6 +2,8 @@ package scraping
 
 import (
 	"crypto/tls"
+	"encoding/base64"
+	"fmt"
 	"image"
 	"io"
 	"log"
@@ -33,9 +35,10 @@ type Rom struct {
 	CoverImg    image.Image
 	DownloadUrl string
 	PageUrl     string
+	RomName     string
 }
 
-func VimmSearchRoms(gameName string, filter string) (roms []Rom) {
+func VimmSearchRoms(gameName string) (roms []Rom) {
 	client := &http.Client{
 		Transport: &http.Transport{
 			// Disabled verification for vimms
@@ -76,7 +79,11 @@ func VimmSearchRoms(gameName string, filter string) (roms []Rom) {
 			rom.Title, _ = jsonparser.GetString(value, "title")
 
 			platformString, _ := jsonparser.GetString(value, "system")
-			rom.Platform = stringToPlatform(platformString)
+			p, ok := VimmPlatforms[platformString]
+			if ok {
+				rom.Platform = p
+			}
+
 			rom.PageUrl, _ = jsonparser.GetString(value, "url")
 
 			req, err := http.NewRequest("GET", rom.PageUrl, nil)
@@ -94,16 +101,37 @@ func VimmSearchRoms(gameName string, filter string) (roms []Rom) {
 				return
 			}
 
-			doc.Find("#dl_form").Each(func(i int, s *goquery.Selection) {
+			//Download Url
+			doc.Find("#dl_form").EachWithBreak(func(i int, s *goquery.Selection) bool {
 				if i > 0 {
-					return
+					return false
 				}
 				mediaId, _ := s.Find("input").First().Attr("value")
 				rom.DownloadUrl = "https://dl3.vimm.net/?mediaId=" + mediaId
+				return false
 			})
 
-			// TODO: Make coverurl from https://thumbnails.libretro.com
+			doc.Find("canvas#canvas2").EachWithBreak(func(i int, s *goquery.Selection) bool {
+				encodedRomName := s.AttrOr("data-v", "")
 
+				if encodedRomName == "" {
+					log.Println("No Rom Name found")
+					return false
+				}
+
+				decodedRomName, err := base64.StdEncoding.DecodeString(encodedRomName)
+				if err != nil {
+					log.Println("Error decoding RomName:", err)
+					return false
+				}
+
+				rom.RomName = string(decodedRomName)
+				fmt.Println("RomTitle:", rom.RomName)
+
+				return false
+			})
+
+			//Game Hashes
 			doc.Find("#data-md5").EachWithBreak(func(i int, s *goquery.Selection) bool {
 				if i > 0 {
 					return false

@@ -38,7 +38,7 @@
 
       if (fetchedGames?.length) {
         const covers = await Promise.all(
-          fetchedGames.map((g) => GetGameCoverUrl(g.Id)),
+          fetchedGames.map((g) => GetGameCoverUrl(g)),
         );
         games = fetchedGames.map((g, i) => ({ ...g, CoverUrl: covers[i] }));
       } else {

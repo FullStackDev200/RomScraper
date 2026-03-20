@@ -10,10 +10,6 @@ export function GetConfig(arg1) {
   return window['go']['main']['App']['GetConfig'](arg1);
 }
 
-export function GetGameCover(arg1) {
-  return window['go']['main']['App']['GetGameCover'](arg1);
-}
-
 export function GetGameCoverUrl(arg1) {
   return window['go']['main']['App']['GetGameCoverUrl'](arg1);
 }

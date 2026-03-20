@@ -63,7 +63,7 @@ const (
 	_Wii                    //Nintendo Wii
 	_DSi                    //Nintendo DSi
 	_3DS                    //Nintendo 3DS
-	_WiiU                   //Nintendo Wii
+	_WiiU                   //Nintendo Wiiu
 	_SW                     //Nintendo Switch
 	_SMS                    //Sega Master System
 	_GEN                    //Sega Genesis
@@ -104,9 +104,9 @@ var AllPlatforms = []struct {
 	Value  Platform
 	TSName string
 }{
-	{_NES, "NES"},
+	{_NES, "_NES"},
 	{_GB, "_GB"},
-	{_SNES, "SNES"},
+	{_SNES, "_SNES"},
 	{_BSX, "_BSX"},
 	{_VB, "_VB"},
 	{_N64, "_N64"},
@@ -187,6 +187,91 @@ func platfromForRA(platform Platform) int {
 		_XBOX:  22, //No achiements
 	}
 	return RAconsoles[platform]
+}
+
+//TODO: Add all platforms
+func platformForLR(platform Platform) string {
+	var LRconsoles = map[Platform]string{
+		_NES:    "Nintendo - Nintendo Entertainment System",
+		_GB:     "Nintendo - Game Boy",
+		_SNES:   "Nintendo - Super Nintendo Entertainment System",
+		_BSX:    "Nintendo - Satellaview",
+		_VB:     "Nintendo - Virtual Boy",
+		_N64:    "Nintendo - Nintendo 64",
+		_GBC:    "Nintendo - Game Boy Color",
+		_GBA:    "Nintendo - Game Boy Advance",
+		_GCN:    "Nintendo - GameCube ",
+		_NDS:    "Nintendo - Nintendo DS",
+		_Wii:    "Nintendo - Wii ",
+		_DSi:    "Nintendo - Nintendo DSi",
+		_3DS:    "Nintendo - Nintendo 3DS",
+		_WiiU:   "Nintendo - Wii U",
+		_SMS:    "Sega - Master System - Mark III",
+		_GEN:    "Sega - Mega Drive - Genesis",
+		_GG:     "Sega - Game Gear",
+		_SCD:    "CD - Sega CD",
+		_32X:    "Sega - 32X",
+		_SAT:    "Sega - Saturn",
+		_DC:     "Sega - Dreamcast",
+		_PS1:    "Sony - PlayStation",
+		_PS2:    "Sony - PlayStation 2",
+		_PS3:    "Sony - PlayStation 3",
+		_PS4:    "Sony - PlayStation 4",
+		_PSP:    "Sony - PlayStation Portable",
+		_PSVita: "Sony - PlayStation Vita",
+		_XBOX:   "Microsoft - Xbox",
+		_XB360:  "Microsoft - Xbox 360",
+		_XBLA:   "The 3DO Company - 3DO",
+		_3DO:    "FBNeo - Arcade Games",
+		_A2600:  "Atari - 2600",
+		_A5200:  "Atari - 5200",
+		_A7800:  "Atari - 7800",
+		_AJ:     "Atari - Jaguar",
+		_JCD:    "Atari - Lynx ",
+		_AL:     "SNK - Neo Geo",
+		_MOB:    "Amstrad - CPC",
+		_NEO:    "Philips - CD-i",
+		_PC:     "NEC - PC Engine - TurboGrafx ",
+		_CD_i:   "NEC - PC Engine CD - TurboGrafx-CD",
+	}
+	return LRconsoles[platform]
+}
+
+var VimmPlatforms = map[string]Platform{
+	"Atari2600": _A2600,
+	"Atari5200": _A5200,
+	"NES":       _NES,
+	"SMS":       _SMS,
+	"Atari7800": _A7800,
+	"TG-16":     _TG_16,
+	"Genesis":   _GEN,
+	"TGCD":      _TGCD,
+	"SNES":      _SNES,
+	"CDi":       _CD_i,
+	"SegaCD":    _SCD,
+	"Jaguar":    _AJ,
+	"32X":       _32X,
+	"Saturn":    _SAT,
+	"PS1":       _PS1,
+	"JaguarCD":  _JCD,
+	"N64":       _N64,
+	"Dreamcast": _DC,
+	"PS2":       _PS2,
+	"GameCube":  _GCN,
+	"Xbox":      _XBOX,
+	"Xbox360":   _XB360,
+	"X360-D":    _XBLA,
+	"PS3":       _PS3,
+	"Wii":       _Wii,
+	"GameBoy":   _GB,
+	"Lynx":      _AL,
+	"GG":        _GG,
+	"VB":        _VB,
+	"GBC":       _GBC,
+	"GBA":       _GBA,
+	"DS":        _NDS,
+	"PSP":       _PSP,
+	"3DS":       _3DS,
 }
 
 func invertMap[K comparable, V comparable](m map[K]V) map[V]K {

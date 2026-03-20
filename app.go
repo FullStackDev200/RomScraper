@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"image"
 
 	sc "github.com/FullStackDev200/RomScraper/scraping"
 	uc "github.com/FullStackDev200/RomScraper/userconfig"
@@ -26,23 +25,19 @@ func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
 }
 
-func (a *App) GetGamesByName(name string) []sc.Game {
-	games := sc.TGDBGetGamesByName(name)
+func (a *App) GetGamesByName(name string) []sc.Rom {
+	// TODO: Make GetGameCoverUrl part of this
+	games := sc.VimmSearchRoms(name)
 	return games
 }
 
-func (a *App) GetGameCover(url string) image.Image {
-	cover := sc.TGDBGetGameCover(url)
-	return cover
-}
-
-func (a *App) GetGameCoverUrl(id int64) string {
-	cover := sc.TGDBGetGameCoverUrl(id)
+func (a *App) GetGameCoverUrl(rom sc.Rom) string {
+	cover := sc.LRGetGameCoverUrl(rom)
 	return cover
 }
 
 func (a *App) VimSearchGames(gameName string, filter string) []sc.Rom {
-	roms := sc.VimmSearchRoms(gameName, filter)
+	roms := sc.VimmSearchRoms(gameName)
 	return roms
 }
 
