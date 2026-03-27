@@ -6,20 +6,12 @@ export function ChooseDirectory() {
   return window['go']['main']['App']['ChooseDirectory']();
 }
 
-export function GetConfig(arg1) {
-  return window['go']['main']['App']['GetConfig'](arg1);
-}
-
 export function GetGameCoverUrl(arg1) {
   return window['go']['main']['App']['GetGameCoverUrl'](arg1);
 }
 
 export function GetGamesByName(arg1) {
   return window['go']['main']['App']['GetGamesByName'](arg1);
-}
-
-export function NewConfigStore() {
-  return window['go']['main']['App']['NewConfigStore']();
 }
 
 export function PlatformToString(arg1) {

@@ -2,25 +2,19 @@ package main
 
 import (
 	"context"
-	"fmt"
 
 	sc "github.com/FullStackDev200/RomScraper/scraping"
-	uc "github.com/FullStackDev200/RomScraper/userconfig"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
-// App struct
 type App struct {
 	ctx context.Context
 }
 
-// NewApp creates a new App application struct
 func NewApp() *App {
 	return &App{}
 }
 
-// startup is called when the app starts. The context is saved
-// so we can call the runtime methods
 func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
 }
@@ -58,26 +52,6 @@ func (a *App) ChooseDirectory() (string, error) {
 
 func (a *App) RAvalidateHash(rom sc.Rom) bool {
 	return sc.RAvalidateHash(rom)
-}
-
-func (a *App) NewConfigStore() (*uc.ConfigStore, error) {
-	store, err := uc.NewConfigStore()
-
-	if err != nil {
-		fmt.Printf("could not initialize the config store: %v\n", err)
-		return &uc.ConfigStore{}, err
-	}
-	return store, err
-}
-
-func (a *App) GetConfig(cs *uc.ConfigStore) (uc.Config, error) {
-	cfg, err := cs.Get()
-	if err != nil {
-		fmt.Printf("could not retrieve the configuration: %v\n", err)
-		return uc.Config{}, err
-	}
-
-	return cfg, err
 }
 
 func (a *App) PlatformToString(platform sc.Platform) string {

@@ -13,7 +13,7 @@
   let showDialog = false;
   let showSettings = false;
 
-  function openDialog(game: scraping.Game) {
+  function openDialog(game: scraping.Rom) {
     selectedGame = game;
     showDialog = true;
   }
@@ -53,6 +53,8 @@
   }
 
   // TODO: Add a store to download multiple files at the same time
+
+  // TODO: Add grouping
 </script>
 
 <link href="./style.css" />

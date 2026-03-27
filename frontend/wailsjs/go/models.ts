@@ -131,18 +131,6 @@ export namespace userconfig {
 	        this.AutoValidate = source["AutoValidate"];
 	    }
 	}
-	export class ConfigStore {
-	
-	
-	    static createFrom(source: any = {}) {
-	        return new ConfigStore(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	
-	    }
-	}
 
 }
 

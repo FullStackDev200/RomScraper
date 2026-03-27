@@ -10,9 +10,8 @@ func toPNG(name string) string {
 	return name[:len(name)-len(ext)] + ".png"
 }
 
-// TODO: Switch to libretro
 func LRGetGameCoverUrl(rom Rom) (url string) {
 	fmt.Println(rom.Platform)
-	url = "https://thumbnails.libretro.com/" + platformForLR(rom.Platform) + "/Named_Boxarts/" + ToPNG(rom.RomName)
+	url = "https://thumbnails.libretro.com/" + platformForLR(rom.Platform) + "/Named_Boxarts/" + toPNG(rom.RomName)
 	return
 }
