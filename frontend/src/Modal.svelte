@@ -1,41 +1,20 @@
 <script lang="ts">
   import Spinner from "./Spinner.svelte";
-  import Switch from "./Switch.svelte";
 
   import { createEventDispatcher, onMount } from "svelte";
 
-  import {
-    VimSearchGames,
-    ChooseDirectory,
-    VimDownloadGame,
-    RAvalidateHash,
-    PlatformToString,
-  } from "../wailsjs/go/main/App.js";
+  import { ChooseDirectory, VimDownloadGame } from "../wailsjs/go/main/App.js";
 
   import { scraping } from "../wailsjs/go/models";
 
-  export let selectedGame: scraping.Rom;
+  export let selectedRoms: scraping.Rom[];
+  let RomCount = 0;
+  $: selectedRom = selectedRoms[RomCount];
   export let showDialog: Boolean;
   let dialog: HTMLDialogElement;
-  let selectedGameRomList: scraping.Rom[];
-  let isLoading = true;
-  let switchValue = "Original";
+  let isLoading = false;
 
   onMount(async () => {
-    const cacheKey = `roms-${selectedGame.Title}`;
-    const cached = localStorage.getItem(cacheKey);
-
-    if (cached) {
-      selectedGameRomList = JSON.parse(cached);
-    } else {
-      selectedGameRomList = await getRoms(selectedGame.Title);
-      localStorage.setItem(cacheKey, JSON.stringify(selectedGameRomList));
-    }
-
-    console.log(selectedGameRomList?.[RomCount]);
-
-    isLoading = false;
-
     window.addEventListener("keydown", (e) => {
       if (e.key == "Escape") {
         closeDialog();
@@ -57,11 +36,12 @@
   async function pickDir() {
     const dir = await ChooseDirectory();
     if (dir) {
-      VimDownloadGame(selectedGameRomList[RomCount], dir);
+      VimDownloadGame(selectedRom, dir);
     } else {
     }
   }
 
+  // TODO: Add RA rom validation
   let validatingPopup = false;
 
   async function validateRom() {
@@ -69,31 +49,15 @@
     await new Promise((r) => setTimeout(r, 2000));
   }
 
-  async function getRoms(romName: string) {
-    const roms = await VimSearchGames(romName, "GBA");
-    // selectedRomList = roms;
-    return roms;
-  }
-
-  let RomCount = 0;
-  let displayPlatform = "Loading…";
-
-  $: displayName = selectedGameRomList?.[RomCount]?.Title ?? "No match found";
-  $: (async () => {
-    displayPlatform =
-      (await PlatformToString(selectedGameRomList?.[RomCount]?.Platform)) ??
-      "No match found";
-  })();
-
   function goToDownlaodPage() {
-    if (selectedGameRomList[RomCount].PageUrl) {
+    if (selectedRom.PageUrl) {
       // @ts-ignore
-      window.runtime.BrowserOpenURL(selectedGameRomList[RomCount].PageUrl);
+      window.runtime.BrowserOpenURL(selectedRom.PageUrl);
     }
   }
 
   function handleNext() {
-    if (RomCount < selectedGameRomList?.length - 1) {
+    if (RomCount < selectedRoms.length - 1) {
       RomCount++;
     }
   }
@@ -105,36 +69,22 @@
   }
 </script>
 
+<!-- TODO: make max sizes so that UI doesn't change that much -->
 <dialog bind:this={dialog} class="noselect">
   <div class="game-info">
-    <h2>{selectedGame.Title}</h2>
+    <h2>{selectedRom.Title}</h2>
     <p><strong>Download Cover:</strong></p>
-    {#if switchValue == "Original"}
-      <img src={selectedGame.CoverUrl} alt={selectedGame.Title} width="200" />
-    {:else}
-      <img
-        src={selectedGameRomList?.[RomCount]?.CoverUrl}
-        alt={selectedGame.Title}
-        width="200"
-      />
-    {/if}
-    <p><strong>Download Title:</strong> {selectedGame.Title}</p>
-    <Switch
-      bind:value={switchValue}
-      label="Choose Cover"
-      design="multi"
-      options={["Original", "Selected"]}
-      fontSize={12}
-    />
+    <img src={selectedRom.CoverUrl} alt={selectedRom.Title} width="200" />
+    <p><strong>Download Title:</strong> {selectedRom.Title}</p>
   </div>
   <div class="separator"></div>
   <div class="rom-info">
     <div class="rom-content">
       <p id="rom-info"><strong>Rom Info</strong></p>
 
-      {#if !isLoading && selectedGameRomList}
-        <p style="max-width: 10em">Name: {displayName}</p>
-        <p>Platform: {displayPlatform}</p>
+      {#if !isLoading && selectedRoms}
+        <p style="max-width: 10em">Name: {selectedRom.Title}</p>
+        <p>Platform: {selectedRom.Platform}</p>
         <div id="choose-buttons">
           <button on:click={handlePrev}>&lt;&lt; Previous</button>
           <p>|</p>
@@ -143,7 +93,7 @@
         <div class="rom-select-info">
           <p style="margin-top: 1px;">{RomCount + 1}</p>
           <p>/</p>
-          <p style="margin-bottom: -1px;">{selectedGameRomList?.length}</p>
+          <p style="margin-bottom: -1px;">{selectedRoms.length}</p>
         </div>
         <div id="user-actions">
           <button on:click={goToDownlaodPage}>Go to Download Page</button>
@@ -154,7 +104,7 @@
       {#if isLoading}
         <Spinner></Spinner>
       {/if}
-      {#if !selectedGameRomList && !isLoading}
+      {#if !selectedRoms && !isLoading}
         <h1>Couldn't Load The Rom</h1>
       {/if}
 

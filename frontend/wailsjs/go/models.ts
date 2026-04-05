@@ -67,6 +67,7 @@ export namespace scraping {
 	    }
 	}
 	export class Rom {
+	    Source: string;
 	    Title: string;
 	    Id: number;
 	    Platform: Platform;
@@ -83,6 +84,7 @@ export namespace scraping {
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Source = source["Source"];
 	        this.Title = source["Title"];
 	        this.Id = source["Id"];
 	        this.Platform = source["Platform"];

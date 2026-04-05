@@ -26,7 +26,9 @@ type GameHash struct {
 	CRC  string
 }
 
+// TODO: Add the country of the rom
 type Rom struct {
+	Source      string
 	Title       string
 	Id          int64
 	Platform    Platform
@@ -76,6 +78,7 @@ func VimmSearchRoms(gameName string) (roms []Rom) {
 			defer func() { <-sem }()
 
 			var rom Rom
+			rom.Source = "Vimm"
 			rom.Title, _ = jsonparser.GetString(value, "title")
 
 			platformString, _ := jsonparser.GetString(value, "system")
